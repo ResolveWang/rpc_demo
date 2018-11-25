@@ -38,6 +38,7 @@ class RPCHandler(asyncore.dispatcher_with_send):
                 break
 
             length, = struct.unpack('I', len_prefix)
+            print(length)
             body = self.rbuf.read(length)
             if len(body) < length:
                 break
