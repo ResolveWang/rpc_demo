@@ -1,5 +1,4 @@
 import os
-import sys
 import math
 import json
 import errno
@@ -23,8 +22,15 @@ class RPCHandler(asyncore.dispatcher_with_send):
         self.rbuf = StringIO()
 
     def handle_connect(self):
+        print(self.addr, 'comes')
+
+    def handle_close(self):
+        print(self.addr, 'bye')
+        self.close()
+
+    def handle_read(self):
         while True:
-            content = self.recv(1024)
+            content = self.recv(1024).decode()
             if content:
                 self.rbuf.write(content)
             if len(content) < 1024:
@@ -34,10 +40,10 @@ class RPCHandler(asyncore.dispatcher_with_send):
     def handle_rpc(self):
         while True:
             self.rbuf.seek(0)
-            len_prefix = self.rbuf.read(4)
+            len_prefix = self.rbuf.read(4).encode()
             if len(len_prefix) < 4:
                 break
-            length, = struct.unpack('I', len_prefix.encode())
+            length, = struct.unpack('I', len_prefix)
             body = self.rbuf.read(length)
             if len(body) < length:
                 break
@@ -68,7 +74,7 @@ class RPCHandler(asyncore.dispatcher_with_send):
         body = json.dumps(resp)
         len_prefix = struct.pack('I', len(body))
         self.send(len_prefix)
-        self.send(body)
+        self.send(body.encode())
 
 
 class RPCServer(asyncore.dispatcher):
