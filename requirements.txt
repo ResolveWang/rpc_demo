@@ -1,1 +1,4 @@
 kazoo==2.6.0
+grpcio==1.16.1
+grpcio-tools==1.16.1
+protobuf==3.6.1
