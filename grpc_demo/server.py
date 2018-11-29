@@ -9,6 +9,10 @@ import pi_pb2_grpc
 
 class PiCalculatorServer(pi_pb2_grpc.PiCalculatorServicer):
     def Calc(self, request, ctx):
+        if request.n <= 0:
+            ctx.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            ctx.set_details('request number should be positive')
+            return pi_pb2.PiResponse()
         time.sleep(0.01)
         s = 0.0
         for i in range(request.n):
